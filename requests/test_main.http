@@ -1,0 +1,30 @@
+# Test your FastAPI endpoints
+
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/health
+Accept: application/json
+
+Response 200 OK
+Content-Type: application/json
+
+{
+  "status": "healthy"
+}
+
+###
+
+GET http://127.0.0.1:8000/hello/User
+Accept: application/json
+
+Response 200 OK
+Content-Type: application/json
+
+{
+  "message": "Hello, User!"
+}
+
+###

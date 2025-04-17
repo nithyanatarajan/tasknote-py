@@ -1,0 +1,53 @@
+# ----------------------------------------
+# Project Metadata
+# ----------------------------------------
+[project]
+name = "tasknote-py"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.12",
+    "uvicorn>=0.34.1",
+]
+
+# ----------------------------------------
+# Ruff Configuration (Linting & Formatting)
+# ----------------------------------------
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+fix = true  # Auto-fix issues
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+    "E", # Pycodestyle errors
+    "F", # Pyflakes (detects unused imports, undefined variables)
+    "I", # isort (order imports)
+    "B", # Bugbear (security/performance issues)
+    "UP", # pyupgrade (suggests modern Python syntax)
+    "PL", # pylint rules
+    "T20", # print statements detection
+    "RUF" # Ruff-specific rules
+]
+ignore = []  # Ignore missing docstrings
+
+[tool.ruff.lint.isort]
+force-single-line = false
+lines-between-types = 1
+combine-as-imports = true
+
+# ----------------------------------------
+# Taskipy Configuration (Task Runner)
+# ----------------------------------------
+[tool.taskipy.tasks]
+install = "uv pip install -r requirements.lock"
+lint = "ruff check ."
+format = "ruff format ."
+test = "pytest tests --verbose"
+run-dev = "uvicorn src.main:app --reload"
+run = "uvicorn src.main:app"
