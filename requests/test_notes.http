@@ -1,0 +1,23 @@
+# Test the POST /notes endpoint
+
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+Response 200 OK
+Content-Type: application/json
+
+{
+  "message": "Welcome to the Notes API"
+}
+
+###
+
+GET http://127.0.0.1:8000/health
+Accept: application/json
+
+Response 200 OK
+Content-Type: application/json
+
+{
+  "status": "OK"
+}
