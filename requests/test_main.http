@@ -1,11 +1,11 @@
 ### Welcome message
 
-GET http://127.0.0.1:8000/
+GET http://127.0.0.1:8080/
 Accept: application/json
 
 ### Health check
 
-GET http://127.0.0.1:8000/health
+GET http://127.0.0.1:8080/health
 Accept: application/json
 
 Response 200 OK
@@ -17,7 +17,7 @@ Content-Type: application/json
 
 ### Say hello to User
 
-GET http://127.0.0.1:8000/hello/User
+GET http://127.0.0.1:8080/hello/User
 Accept: application/json
 
 Response 200 OK

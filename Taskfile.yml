@@ -19,16 +19,20 @@ tasks:
 
   run-dev:
     desc: Run main FastAPI app in dev mode
-    cmd: uvicorn src.main:app --reload
+    cmd: uvicorn src.main:app --reload --port 8080
 
   run:
     desc: Run main FastAPI app
-    cmd: uvicorn src.main:app
+    cmd: uvicorn src.main:app --port 8080
 
   run-notes-dev:
     desc: Run notes FastAPI app in dev mode
-    cmd: uvicorn src.notes.main:app --reload
+    cmd: uvicorn src.notes.main:app --reload --port 8081
 
   run-notes:
     desc: Run notes FastAPI app
-    cmd: uvicorn src.notes.main:app
+    cmd: uvicorn src.notes.main:app --port 8081
+
+  run-all:
+    desc: Run both main and notes apps concurrently
+    deps: [ run, run-notes ]
