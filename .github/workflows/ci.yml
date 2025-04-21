@@ -26,8 +26,11 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Install Task
+        uses: arduino/setup-task@v2
+
       - name: Lint code
-        run: uv run task lint
+        run: task lint
 
       - name: Run tests
-        run: uv run task test
+        run: task test

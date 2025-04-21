@@ -1,0 +1,34 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install dependencies from requirements.lock using uv
+    cmd: uv pip install -r requirements.lock
+
+  lint:
+    desc: Lint the codebase using ruff
+    cmd: ruff check .
+
+  format:
+    desc: Format code using ruff
+    cmd: ruff format .
+
+  test:
+    desc: Run tests with pytest and coverage
+    cmd: pytest --cov=src tests --verbose
+
+  run-dev:
+    desc: Run main FastAPI app in dev mode
+    cmd: uvicorn src.main:app --reload
+
+  run:
+    desc: Run main FastAPI app
+    cmd: uvicorn src.main:app
+
+  run-notes-dev:
+    desc: Run notes FastAPI app in dev mode
+    cmd: uvicorn src.notes.main:app --reload
+
+  run-notes:
+    desc: Run notes FastAPI app
+    cmd: uvicorn src.notes.main:app
