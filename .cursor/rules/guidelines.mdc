@@ -1,0 +1,120 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rules for TaskNote
+
+This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Driven Development (TDD). Your changes must align with the architectural boundaries defined below.
+
+---
+
+## 🧭 Project Conventions
+
+- The application is an **async-first FastAPI monorepo**.
+- All code lives under `src/`.
+- Use `pydantic` for schema validation and `pydantic-settings` for config.
+- Use `ruff` for linting and formatting.
+- Use `taskipy` for task automation.
+- Use `httpx` + `pytest-asyncio` for tests.
+- Use only asynchronous code unless explicitly allowed.
+- Use `__init__.py` in each package to ensure clean imports.
+
+---
+
+## 📁 Folder Structure and Responsibilities
+
+### `src/<domain_name>/api/`
+
+- Defines **HTTP endpoints** using FastAPI.
+- Responsible for request/response handling only.
+- Depends on `schemas.py` for validation and `application/` for use cases.
+- ✅ Includes:
+  - FastAPI `APIRouter`
+  - Pydantic view models for request/response should be defined in `api/schemas.py`
+  - These should map to domain models as needed, not be reused directly from `domain/`
+
+- ❌ No business logic, persistence, or DB access here.
+
+### `src/<domain_name>/application/`
+
+- Contains **use case orchestration** — the "what the app does".
+- Calls domain models and persistence.
+- Should be easy to test and free of framework dependencies.
+- ✅ Includes:
+  - `NoteService`, `TaskService`, etc.
+  - Input validation or flow control
+- ❌ Do not place FastAPI, SQLAlchemy, or request/response logic here.
+
+### `src/<domain_name>/domain/`
+
+- The **core** of your business logic and data model.
+- Defines entities, value objects, and domain-specific exceptions.
+- Contains rules that would remain unchanged even if delivery method or database changed.
+- ✅ Includes:
+  - `Note`, `Task`, etc.
+  - Custom exception classes
+- ❌ No FastAPI or database-specific logic.
+
+### `src/<domain_name>/persistence/`
+
+- Handles **data access and storage** logic.
+- Implements repository patterns and talks to the DB.
+- Should implement interfaces defined in `domain` (once added).
+- ✅ Includes:
+  - Repositories
+  - DB access code (SQLAlchemy, asyncpg, etc.)
+- ❌ Avoid domain logic or validation here.
+
+---
+
+## ✅ General Guidelines
+
+- Do not write HTTP, SQL, or ORM logic in `domain/` or `api/`.
+- Keep endpoints thin and redirect work to `application/`.
+- Keep view models (`NoteCreate`, `NoteRead`, etc.) separate from domain entities.
+- Place view models in `api/schemas.py`, and use explicit mapping between schema and domain objects.
+- Write tests first where possible (TDD).
+- Use `httpx.AsyncClient` with `ASGITransport` for async API tests.
+- All code must be placed inside the appropriate layer as described above.
+- `__init__.py` should exist in each package.
+- Use `uvicorn`, `task`, or `pytest` in command suggestions — never `python main.py`
+
+---
+
+## 🧠 Cursor Instructions
+
+- Always show a **summary of the intended update** before making changes.
+- Wait for user approval before applying non-trivial changes.
+
+---
+
+## 📦 Tech Stack Constraints
+
+- FastAPI for routing
+- Pydantic & Pydantic Settings
+- httpx, pytest-asyncio, taskipy, ruff
+- Async only — no sync I/O
+
+---
+
+## 🔐 Configuration, Secrets & Constants
+
+- Never use hard-coded values for sensitive data (e.g. passwords, tokens, API keys).
+- Use environment variables for config via `pydantic-settings`.
+- If multiple environments are used (e.g., dev/stage/prod), allow configuration via `.env` files or a structured `yaml`/`toml` config loader.
+- Load config via a dedicated `config.py` in each service or shared module.
+- Constants (e.g., default limits, timeouts) should be defined in `constants.py` or `settings.py` — not embedded as magic numbers.
+
+✅ Examples:
+- ✅ `settings.DB_URL` instead of a hardcoded connection string
+- ✅ `settings.API_TIMEOUT` instead of `timeout=30`
+- ✅ `settings.SERVICE_NAME` instead of `"tasknote"`
+
+❌ Avoid:
+- ❌ `"localhost:5432"` directly in code
+- ❌ `"secret-key"` or any literal secrets
+- ❌ Random integers in logic without explanation
+
+---
+
