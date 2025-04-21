@@ -20,6 +20,7 @@ dev = [
     "uvicorn", # ASGI server
     "httpx", # async HTTP client
     "fastapi[standard]", # FastAPI with standard dependencies
+    "pytest-cov", # coverage reporting
 ]
 
 # ----------------------------------------
@@ -52,6 +53,9 @@ force-single-line = false
 lines-between-types = 1
 combine-as-imports = true
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["PLR2004"]
+
 # ----------------------------------------
 # Taskipy Configuration (Task Runner)
 # ----------------------------------------
@@ -59,7 +63,7 @@ combine-as-imports = true
 install = "uv pip install -r requirements.lock"
 lint = "ruff check ."
 format = "ruff format ."
-test = "pytest tests --verbose"
+test = "pytest --cov=src tests --verbose"
 run-dev = "uvicorn src.main:app --reload"
 run = "uvicorn src.main:app"
 run-notes-dev = "uvicorn src.notes.main:app --reload"
