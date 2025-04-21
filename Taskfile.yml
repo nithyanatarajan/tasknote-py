@@ -7,31 +7,36 @@ tasks:
 
   lint:
     desc: Lint the codebase using ruff
-    cmd: ruff check .
+    cmd: uv run ruff check .
 
   format:
     desc: Format code using ruff
-    cmd: ruff format .
+    cmd: uv run ruff format .
 
   test:
     desc: Run tests with pytest and coverage
-    cmd: pytest --cov=src tests --verbose
+    cmd: uv run pytest tests
+
+  test-coverage:
+    desc: Run tests with pytest and coverage
+    cmd: uv run pytest --cov=src tests --verbose
+
 
   run-dev:
     desc: Run main FastAPI app in dev mode
-    cmd: uvicorn src.main:app --reload --port 8080
+    cmd: uv run uvicorn src.main:app --reload --port 8080
 
   run:
     desc: Run main FastAPI app
-    cmd: uvicorn src.main:app --port 8080
+    cmd: uv run uvicorn src.main:app --port 8080
 
   run-notes-dev:
     desc: Run notes FastAPI app in dev mode
-    cmd: uvicorn src.notes.main:app --reload --port 8081
+    cmd: uv run uvicorn src.notes.main:app --reload --port 8081
 
   run-notes:
     desc: Run notes FastAPI app
-    cmd: uvicorn src.notes.main:app --port 8081
+    cmd: uv run uvicorn src.notes.main:app --port 8081
 
   run-all:
     desc: Run both main and notes apps concurrently
