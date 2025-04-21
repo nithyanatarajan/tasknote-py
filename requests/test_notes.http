@@ -1,4 +1,4 @@
-# Test the POST /notes endpoint
+### Welcome message
 
 GET http://127.0.0.1:8000/
 Accept: application/json
@@ -10,7 +10,7 @@ Content-Type: application/json
   "message": "Welcome to the Notes API"
 }
 
-###
+### Health check
 
 GET http://127.0.0.1:8000/health
 Accept: application/json
@@ -20,4 +20,14 @@ Content-Type: application/json
 
 {
   "status": "OK"
+}
+
+### Create a new note
+POST http://127.0.0.1:8000/api/notes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Sample Note",
+  "content": "This is a sample note content."
 }
