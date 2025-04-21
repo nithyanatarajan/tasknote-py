@@ -1,0 +1,5 @@
+# File: config/services.yaml
+
+notes:
+  envs:
+    log_level: INFO
