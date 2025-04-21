@@ -131,7 +131,7 @@ Generates basic user activity reports and productivity metrics.
 | Logging           | structlog                           | Zap-style structured, JSON-friendly logging |
 | Linting           | ruff                                | Fast linting and formatting                 |
 | Testing           | pytest + pytest-asyncio + httpx     | Async test suite + test client              |
-| Dev Automation    | taskipy                             | Python-native task runner                   |
+| Dev Automation    | TaskFile                            | Task runner                                 |
 | Containerization  | Docker                              | Service-level containers                    |
 | CI/CD             | GitHub Actions                      | Linting, testing, Docker builds per service |
 | Monitoring        | Prometheus                          | Metrics collection from services            |

@@ -1,5 +1,5 @@
 # TaskNote
-[![CI](https://github.com/nithyanatarajan/tasknote-py/actions/workflows/ci.yml/badge.svg)](https://github.com/nithyanatarajan/tasknote-py/actions/workflows/ci.yml)
+[![CI](https://github.com/nithyanatarajan/tasknote-py/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/nithyanatarajan/tasknote-py/actions/workflows/ci.yml)
 
 TaskNote is a personal productivity tool designed to manage notes and tasks with tags support. The tool also provides
 insightful analytics about the user's daily activity and productivity trends.
