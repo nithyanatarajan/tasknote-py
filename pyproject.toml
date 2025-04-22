@@ -10,6 +10,9 @@ dependencies = [
     "fastapi",
     "pydantic-settings",
     "structlog",
+    "alembic",
+    "asyncpg",
+    "psycopg2",
 ]
 
 [project.optional-dependencies]

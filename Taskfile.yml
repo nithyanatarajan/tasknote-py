@@ -41,3 +41,21 @@ tasks:
   run-all:
     desc: Run both main and notes apps concurrently
     deps: [ run, run-notes ]
+
+  migrate-notes:
+    desc: "Up-Migrate Notes service"
+    cmds:
+      - alembic -c src/notes/alembic.ini upgrade head
+
+  down-migrate-notes:
+    desc: "Down-Migrate Notes service"
+    cmds:
+      - alembic -c src/notes/alembic.ini downgrade -1
+
+
+  revision-notes:
+    desc: "Create a new Alembic revision for Notes"
+    cmds:
+      - alembic -c src/notes/alembic.ini revision --autogenerate -m "{{.MSG}}"
+    requires:
+      vars: [ "MSG" ]
