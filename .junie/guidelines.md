@@ -1,13 +1,4 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-# Cursor Rules for TaskNote
-
-This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Driven Development (TDD). Your changes must align with the architectural boundaries defined below.
-
----
+# Project Guidelines
 
 ## 🧭 Project Conventions
 
@@ -29,9 +20,9 @@ This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Dr
 - Responsible for request/response handling only.
 - Depends on `schemas.py` for validation and `application/` for use cases.
 - ✅ Includes:
-  - FastAPI `APIRouter`
-  - Pydantic view models for request/response should be defined in `api/schemas.py`
-  - These should map to domain models as needed, not be reused directly from `domain/`
+    - FastAPI `APIRouter`
+    - Pydantic view models for request/response should be defined in `api/schemas.py`
+    - These should map to domain models as needed, not be reused directly from `domain/`
 
 - ❌ No business logic, persistence, or DB access here.
 
@@ -41,8 +32,8 @@ This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Dr
 - Calls domain models and persistence.
 - Should be easy to test and free of framework dependencies.
 - ✅ Includes:
-  - `NoteService`, `TaskService`, etc.
-  - Input validation or flow control
+    - `NoteService`, `TaskService`, etc.
+    - Input validation or flow control
 - ❌ Do not place FastAPI, SQLAlchemy, or request/response logic here.
 
 ### `src/<domain_name>/domain/`
@@ -51,8 +42,8 @@ This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Dr
 - Defines entities, value objects, and domain-specific exceptions.
 - Contains rules that would remain unchanged even if delivery method or database changed.
 - ✅ Includes:
-  - `Note`, `Task`, etc.
-  - Custom exception classes
+    - `Note`, `Task`, etc.
+    - Custom exception classes
 - ❌ No FastAPI or database-specific logic.
 
 ### `src/<domain_name>/persistence/`
@@ -61,8 +52,8 @@ This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Dr
 - Implements repository patterns and talks to the DB.
 - Should implement interfaces defined in `domain` (once added).
 - ✅ Includes:
-  - Repositories
-  - DB access code (SQLAlchemy, asyncpg, etc.)
+    - Repositories
+    - DB access code (SQLAlchemy, asyncpg, etc.)
 - ❌ Avoid domain logic or validation here.
 
 ---
@@ -81,7 +72,7 @@ This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Dr
 
 ---
 
-## 🧠 Cursor Instructions
+## 🧠 Junie Instructions
 
 - Always show a **summary of the intended update** before making changes.
 - Wait for user approval before applying non-trivial changes.
@@ -101,19 +92,22 @@ This project follows Domain-Driven Design (DDD), Clean Architecture, and Test-Dr
 
 - Never use hard-coded values for sensitive data (e.g. passwords, tokens, API keys).
 - Use environment variables for config via `pydantic-settings`.
-- If multiple environments are used (e.g., dev/stage/prod), allow configuration via `.env` files or a structured `yaml`/`toml` config loader.
+- If multiple environments are used (e.g., dev/stage/prod), allow configuration via `.env` files or a structured `yaml`/
+  `toml` config loader.
 - Load config via a dedicated `config.py` in each service or shared module.
-- Constants (e.g., default limits, timeouts) should be defined in `constants.py` or `settings.py` — not embedded as magic numbers.
+- Constants (e.g., default limits, timeouts) should be defined in `constants.py` or `settings.py` — not embedded as
+  magic numbers.
 
 ✅ Examples:
+
 - ✅ `settings.DB_URL` instead of a hardcoded connection string
 - ✅ `settings.API_TIMEOUT` instead of `timeout=30`
 - ✅ `settings.SERVICE_NAME` instead of `"tasknote"`
 
 ❌ Avoid:
+
 - ❌ `"localhost:5432"` directly in code
 - ❌ `"secret-key"` or any literal secrets
 - ❌ Random integers in logic without explanation
 
 ---
-
