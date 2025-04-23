@@ -48,8 +48,7 @@ async def test_create_note():
 
     assert response.status_code == codes.OK
     data = response.json()
-    assert data['title'] == 'Test Note'
-    assert data['content'] == 'This is a test note from api.'
+    assert data == mock_note
     mock_service.create_note.assert_called_once_with(
         NoteCreate(title='Test Note', content='This is a test note from api.')
     )
