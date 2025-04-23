@@ -1,3 +1,5 @@
+# src/notes/persistence/entities.py
+
 from datetime import datetime
 
 from sqlalchemy import DateTime, Integer, String, Text
@@ -14,4 +16,4 @@ class NoteEntity(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

@@ -1,10 +1,10 @@
+# src/notes/domain/model.py
 from datetime import datetime
 
 
 class Note:
-    id = 0
-
-    def __init__(self, title: str, content: str, created_at: datetime):
+    def __init__(self, title: str, content: str, created_at: datetime, id: int | None = None):
+        self.id = id
         self.title = title
         self.content = content
         self.created_at = created_at

@@ -3,11 +3,11 @@ from src.common.timeutils import now_ist
 from ..api.schemas import NoteCreate
 from ..domain.model import Note
 from ..logger import log
-from ..persistence.repository import InMemoryNoteRepository
+from ..persistence.repository import NotesRepository
 
 
 class NoteService:
-    def __init__(self, repository: InMemoryNoteRepository):
+    def __init__(self, repository: NotesRepository):
         self.repository = repository
 
     async def create_note(self, note_create: NoteCreate) -> Note:

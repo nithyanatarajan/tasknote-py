@@ -13,6 +13,8 @@ dependencies = [
     "alembic",
     "asyncpg",
     "psycopg2",
+    "python-dotenv",
+    "greenlet",
 ]
 
 [project.optional-dependencies]
@@ -24,6 +26,7 @@ dev = [
     "httpx", # async HTTP client
     "fastapi[standard]", # FastAPI with standard dependencies
     "pytest-cov", # coverage reporting
+    "testcontainers", # Docker-based testing
 ]
 
 # ----------------------------------------
