@@ -9,6 +9,16 @@ from ..persistence.repository import NotesRepository
 router = APIRouter()
 
 
+@router.get('/')
+async def root():
+    return {'message': 'Welcome to the Notes API'}
+
+
+@router.get('/health')
+async def health():
+    return {'status': 'OK'}
+
+
 @router.post('/notes', response_model=NoteRead)
 async def create_note(note_create: NoteCreate):
     async with get_db_session() as session:

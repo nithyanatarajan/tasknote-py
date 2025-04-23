@@ -1,6 +1,6 @@
 ### Welcome message
 
-GET http://127.0.0.1:8081/
+GET http://127.0.0.1:8081/tasknote
 Accept: application/json
 
 Response 200 OK
@@ -12,7 +12,7 @@ Content-Type: application/json
 
 ### Health check
 
-GET http://127.0.0.1:8081/health
+GET http://127.0.0.1:8081/tasknote/health
 Accept: application/json
 
 Response 200 OK
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ### Create a new note
-POST http://127.0.0.1:8081/api/notes
+POST http://127.0.0.1:8081/tasknote/notes
 Content-Type: application/json
 Accept: application/json
 
