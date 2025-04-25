@@ -35,3 +35,11 @@ async def get_note(note_id: int, service: NoteService = Depends(get_note_service
         return await service.get_note(note_id)
     except NoteNotFoundError as e:
         raise HTTPException(status_code=404, detail=e.message) from e
+
+
+@router.delete('/notes/{note_id}', status_code=204)
+async def delete_note(note_id: int, service: NoteService = Depends(get_note_service)):
+    try:
+        await service.delete_note(note_id)
+    except NoteNotFoundError as e:
+        raise HTTPException(status_code=404, detail=e.message) from e

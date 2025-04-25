@@ -29,3 +29,11 @@ class NotesRepository:
         if note_orm is None:
             raise NoteNotFoundError(note_id)
         return to_domain(note_orm)
+
+    async def delete_note(self, note_id) -> None:
+        result = await self.session.execute(select(NoteEntity).where(NoteEntity.id == note_id))
+        note_orm = result.scalars().first()
+        if note_orm is None:
+            raise NoteNotFoundError(note_id)
+        await self.session.delete(note_orm)
+        await self.session.commit()

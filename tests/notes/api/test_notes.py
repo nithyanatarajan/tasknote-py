@@ -132,3 +132,39 @@ async def test_get_notes():
     mock_service.get_all_notes.assert_called_once()
 
     app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_delete_note():
+    note_id = 1
+    mock_service = AsyncMock()
+
+    app.dependency_overrides[get_note_service] = lambda: mock_service
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.delete(f'/notes/{note_id}')
+
+    assert response.status_code == codes.NO_CONTENT
+    assert response.content == b''  # No content in response body
+    mock_service.delete_note.assert_called_once_with(note_id)
+
+    app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_delete_note_not_found():
+    note_id = 999
+    mock_service = AsyncMock()
+    mock_service.delete_note.side_effect = NoteNotFoundError(note_id)
+
+    app.dependency_overrides[get_note_service] = lambda: mock_service
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.delete(f'/notes/{note_id}')
+
+    assert response.status_code == codes.NOT_FOUND
+    data = response.json()
+    assert data == {'detail': f'Note not found: {note_id}'}
+    mock_service.delete_note.assert_called_once_with(note_id)
+
+    app.dependency_overrides.clear()

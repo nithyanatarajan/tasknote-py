@@ -132,3 +132,65 @@ async def test_get_notes_e2e(session):
 
     # Clean up to avoid override leakage
     app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_delete_note_e2e_success(session):
+    # Override the app's DB session to use test session
+    async def override_get_db_session():
+        yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+
+    # First create a note
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        create_response = await ac.post(
+            '/notes', json={'title': 'Delete Note Test', 'content': 'This is a test for delete note.'}
+        )
+
+    assert create_response.status_code == codes.OK
+    created_note = create_response.json()
+    note_id = created_note['id']
+
+    # Then delete the note
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        delete_response = await ac.delete(f'/notes/{note_id}')
+
+    assert delete_response.status_code == codes.NO_CONTENT
+    assert delete_response.content == b''  # No content in response body
+
+    # Verify the note is deleted by trying to get it
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        get_response = await ac.get(f'/notes/{note_id}')
+
+    assert get_response.status_code == codes.NOT_FOUND
+    error = get_response.json()
+    assert 'Note not found' in error['detail']
+    assert str(note_id) in error['detail']
+
+    # Clean up to avoid override leakage
+    app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_delete_note_e2e_not_found(session):
+    # Override the app's DB session to use test session
+    async def override_get_db_session():
+        yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+
+    # Try to delete a non-existent note
+    non_existent_id = 9999  # Assuming this ID doesn't exist
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.delete(f'/notes/{non_existent_id}')
+
+    assert response.status_code == codes.NOT_FOUND
+    error = response.json()
+    assert 'Note not found' in error['detail']
+    assert str(non_existent_id) in error['detail']
+
+    # Clean up to avoid override leakage
+    app.dependency_overrides.clear()

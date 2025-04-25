@@ -75,3 +75,32 @@ async def test_get_note_not_found(repository):
 
     assert str(non_existent_id) in str(excinfo.value)
     assert 'Note not found' in str(excinfo.value)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_delete_note(repository):
+    # Arrange
+    note = Note(title='Test Delete Note', content='This is a test for delete_note.', created_at=now_ist())
+    added_note = await repository.add_note(note)
+
+    # Act
+    await repository.delete_note(added_note.id)
+
+    # Assert
+    with pytest.raises(NoteNotFoundError):
+        await repository.get_note(added_note.id)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_delete_note_not_found(repository):
+    # Arrange
+    non_existent_id = 9999  # Assuming this ID doesn't exist
+
+    # Act & Assert
+    with pytest.raises(NoteNotFoundError) as excinfo:
+        await repository.delete_note(non_existent_id)
+
+    assert str(non_existent_id) in str(excinfo.value)
+    assert 'Note not found' in str(excinfo.value)

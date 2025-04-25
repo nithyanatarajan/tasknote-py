@@ -23,3 +23,7 @@ class NoteService:
     async def get_all_notes(self) -> list[Note]:
         log.info('Fetching all notes')
         return await self.repository.get_all()
+
+    async def delete_note(self, note_id: int) -> None:
+        log.info('Deleting note', note_id=note_id)
+        await self.repository.delete_note(note_id)

@@ -78,3 +78,32 @@ async def test_get_all_notes():
     # Assert
     assert result == mock_notes
     mock_repository.get_all.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_delete_note():
+    # Arrange
+    mock_repository = AsyncMock()
+    note_service = NoteService(repository=mock_repository)
+    note_id = 1
+
+    # Act
+    await note_service.delete_note(note_id)
+
+    # Assert
+    mock_repository.delete_note.assert_called_once_with(note_id)
+
+
+@pytest.mark.asyncio
+async def test_delete_note_propagates_not_found_error():
+    # Arrange
+    mock_repository = AsyncMock()
+    mock_repository.delete_note.side_effect = NoteNotFoundError(1)
+    note_service = NoteService(repository=mock_repository)
+
+    # Act & Assert
+    with pytest.raises(NoteNotFoundError) as excinfo:
+        await note_service.delete_note(1)
+
+    mock_repository.delete_note.assert_called_once_with(1)
+    assert 'Note not found: 1' in str(excinfo.value)
