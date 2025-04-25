@@ -4,6 +4,7 @@ import asyncio
 import pytest
 
 from src.common.timeutils import now_ist
+from src.notes.domain.exceptions import NoteNotFoundError
 from src.notes.domain.model import Note
 
 
@@ -43,3 +44,34 @@ async def test_get_all_notes(repository):
     assert 'Note 2' in titles
     assert 'Content 1' in contents
     assert 'Content 2' in contents
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_note(repository):
+    # Arrange
+    note = Note(title='Test Get Note', content='This is a test for get_note.', created_at=now_ist())
+    added_note = await repository.add_note(note)
+
+    # Act
+    retrieved_note = await repository.get_note(added_note.id)
+
+    # Assert
+    assert retrieved_note is not None
+    assert retrieved_note.id == added_note.id
+    assert retrieved_note.title == 'Test Get Note'
+    assert retrieved_note.content == 'This is a test for get_note.'
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_note_not_found(repository):
+    # Arrange
+    non_existent_id = 9999  # Assuming this ID doesn't exist
+
+    # Act & Assert
+    with pytest.raises(NoteNotFoundError) as excinfo:
+        await repository.get_note(non_existent_id)
+
+    assert str(non_existent_id) in str(excinfo.value)
+    assert 'Note not found' in str(excinfo.value)

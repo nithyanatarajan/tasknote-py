@@ -8,6 +8,7 @@ from httpx import ASGITransport, AsyncClient, codes
 from src.notes.api.dependencies import get_note_service
 from src.notes.api.router import router
 from src.notes.api.schemas import NoteCreate
+from src.notes.domain.exceptions import NoteNotFoundError
 
 app = FastAPI()
 app.include_router(router)
@@ -52,5 +53,49 @@ async def test_create_note():
     mock_service.create_note.assert_called_once_with(
         NoteCreate(title='Test Note', content='This is a test note from api.')
     )
+
+    app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_get_note():
+    mock_note = {
+        'id': 1,
+        'title': 'Test Note',
+        'content': 'This is a test note from api.',
+        'created_at': '2023-10-01T00:00:00',
+    }
+
+    mock_service = AsyncMock()
+    mock_service.get_note.return_value = mock_note
+
+    app.dependency_overrides[get_note_service] = lambda: mock_service
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.get('/notes/1')
+
+    assert response.status_code == codes.OK
+    data = response.json()
+    assert data == mock_note
+    mock_service.get_note.assert_called_once_with(1)
+
+    app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_get_note_not_found():
+    note_id = 999
+    mock_service = AsyncMock()
+    mock_service.get_note.side_effect = NoteNotFoundError(note_id)
+
+    app.dependency_overrides[get_note_service] = lambda: mock_service
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.get(f'/notes/{note_id}')
+
+    assert response.status_code == codes.NOT_FOUND
+    data = response.json()
+    assert data == {'detail': f'Note not found: {note_id}'}
+    mock_service.get_note.assert_called_once_with(note_id)
 
     app.dependency_overrides.clear()

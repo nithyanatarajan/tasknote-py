@@ -33,3 +33,60 @@ async def test_create_note_e2e(session):
 
     # Clean up to avoid override leakage
     app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_note_e2e_success(session):
+    # Override the app's DB session to use test session
+    async def override_get_db_session():
+        yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+
+    # First create a note
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        create_response = await ac.post(
+            '/notes', json={'title': 'Get Note Test', 'content': 'This is a test for get note.'}
+        )
+
+    assert create_response.status_code == codes.OK
+    created_note = create_response.json()
+    note_id = created_note['id']
+
+    # Then retrieve the note
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        get_response = await ac.get(f'/notes/{note_id}')
+
+    assert get_response.status_code == codes.OK
+    retrieved_note = get_response.json()
+    assert retrieved_note['id'] == note_id
+    assert retrieved_note['title'] == 'Get Note Test'
+    assert retrieved_note['content'] == 'This is a test for get note.'
+    assert 'created_at' in retrieved_note
+
+    # Clean up to avoid override leakage
+    app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_note_e2e_not_found(session):
+    # Override the app's DB session to use test session
+    async def override_get_db_session():
+        yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+
+    # Try to retrieve a non-existent note
+    non_existent_id = 9999  # Assuming this ID doesn't exist
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.get(f'/notes/{non_existent_id}')
+
+    assert response.status_code == codes.NOT_FOUND
+    error = response.json()
+    assert 'Note not found' in error['detail']
+    assert str(non_existent_id) in error['detail']
+
+    # Clean up to avoid override leakage
+    app.dependency_overrides.clear()

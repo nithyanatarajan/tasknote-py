@@ -2,6 +2,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..domain.exceptions import NoteNotFoundError
 from ..domain.model import Note
 from ..persistence.entities import NoteEntity
 from ..persistence.mappers import to_domain, to_entity
@@ -21,3 +22,10 @@ class NotesRepository:
     async def get_all(self) -> list[Note]:
         result = await self.session.execute(select(NoteEntity))
         return [to_domain(row) for row in result.scalars().all()]
+
+    async def get_note(self, note_id) -> Note:
+        result = await self.session.execute(select(NoteEntity).where(NoteEntity.id == note_id))
+        note_orm = result.scalars().first()
+        if note_orm is None:
+            raise NoteNotFoundError(note_id)
+        return to_domain(note_orm)
