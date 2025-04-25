@@ -24,6 +24,11 @@ async def create_note(note_create: NoteCreate, service: NoteService = Depends(ge
     return await service.create_note(note_create)
 
 
+@router.get('/notes', response_model=list[NoteRead])
+async def get_notes(service: NoteService = Depends(get_note_service)):
+    return await service.get_all_notes()
+
+
 @router.get('/notes/{note_id}', response_model=NoteRead)
 async def get_note(note_id: int, service: NoteService = Depends(get_note_service)):
     try:

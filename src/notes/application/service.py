@@ -19,3 +19,7 @@ class NoteService:
     async def get_note(self, note_id: int) -> Note:
         log.info('Fetching note', note_id=note_id)
         return await self.repository.get_note(note_id)
+
+    async def get_all_notes(self) -> list[Note]:
+        log.info('Fetching all notes')
+        return await self.repository.get_all()

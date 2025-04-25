@@ -90,3 +90,45 @@ async def test_get_note_e2e_not_found(session):
 
     # Clean up to avoid override leakage
     app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_notes_e2e(session):
+    # Override the app's DB session to use test session
+    async def override_get_db_session():
+        yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+
+    # First create a few notes
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        await ac.post('/notes', json={'title': 'List Test Note 1', 'content': 'This is test note 1 for list endpoint.'})
+        await ac.post('/notes', json={'title': 'List Test Note 2', 'content': 'This is test note 2 for list endpoint.'})
+
+    # Then retrieve all notes
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.get('/notes')
+
+    assert response.status_code == codes.OK
+    notes = response.json()
+    assert isinstance(notes, list)
+
+    # Check if our test notes are in the list
+    titles = [note['title'] for note in notes]
+    contents = [note['content'] for note in notes]
+
+    assert 'List Test Note 1' in titles
+    assert 'List Test Note 2' in titles
+    assert 'This is test note 1 for list endpoint.' in contents
+    assert 'This is test note 2 for list endpoint.' in contents
+
+    # Verify each note has the expected structure
+    for note in notes:
+        assert 'id' in note
+        assert 'title' in note
+        assert 'content' in note
+        assert 'created_at' in note
+
+    # Clean up to avoid override leakage
+    app.dependency_overrides.clear()

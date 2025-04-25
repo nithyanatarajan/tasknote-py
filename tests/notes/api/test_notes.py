@@ -99,3 +99,36 @@ async def test_get_note_not_found():
     mock_service.get_note.assert_called_once_with(note_id)
 
     app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_get_notes():
+    mock_notes = [
+        {
+            'id': 1,
+            'title': 'Test Note 1',
+            'content': 'This is test note 1.',
+            'created_at': '2023-10-01T00:00:00',
+        },
+        {
+            'id': 2,
+            'title': 'Test Note 2',
+            'content': 'This is test note 2.',
+            'created_at': '2023-10-02T00:00:00',
+        },
+    ]
+
+    mock_service = AsyncMock()
+    mock_service.get_all_notes.return_value = mock_notes
+
+    app.dependency_overrides[get_note_service] = lambda: mock_service
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.get('/notes')
+
+    assert response.status_code == codes.OK
+    data = response.json()
+    assert data == mock_notes
+    mock_service.get_all_notes.assert_called_once()
+
+    app.dependency_overrides.clear()
