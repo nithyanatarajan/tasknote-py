@@ -4,6 +4,11 @@
 TaskNote is a personal productivity tool designed to manage notes and tasks with tags support. The tool also provides
 insightful analytics about the user's daily activity and productivity trends.
 
+## Idea
+
+TaskNote explores the Python server-side stack, with a focus on clean architecture, best practices, and automation through agentic code assistants like Junie and Cursor.  
+The project aims to drive the generation of production-grade code by instructing assistants through structured, principle-driven guidance, rather than ad hoc development.
+
 ## Installations
 
 1. Install [uv](https://github.com/astral-sh/uv)
