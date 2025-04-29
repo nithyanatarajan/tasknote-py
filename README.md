@@ -6,8 +6,8 @@ insightful analytics about the user's daily activity and productivity trends.
 
 ## Idea
 
-TaskNote explores the Python server-side stack, with a focus on clean architecture, best practices, and automation through agentic code assistants like Junie and Cursor.  
-The project aims to drive the generation of production-grade code by instructing assistants through structured, principle-driven guidance, rather than ad hoc development.
+TaskNote explores the Python server-side stack, with a focus on **clean architecture**, **best practices**, and **guided code generation through agentic code assistants like Junie and Cursor**.  
+The project emphasizes driving production-grade code by **writing structured prompts** and providing **principle-driven guidance** that instructs assistants, rather than relying on manual coding or ad hoc development practices.
 
 ## Installations
 
