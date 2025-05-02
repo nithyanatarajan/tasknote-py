@@ -1,4 +1,4 @@
-# tests/tasknote/persistence/test_repository.py
+# tests/tasknote/persistence/test_notes_repository.py
 import asyncio
 
 import pytest
@@ -17,24 +17,24 @@ async def event_loop():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_add_note(repository):
-    note = Note(title='Test Note', content='This is a test note from repository.', created_at=now_ist())
-    added_note = await repository.add_note(note)
+async def test_add_note(notes_repository):
+    note = Note(title='Test Note', content='This is a test note from notes_repository.', created_at=now_ist())
+    added_note = await notes_repository.add_note(note)
 
     assert added_note.id is not None
     assert added_note.title == 'Test Note'
-    assert added_note.content == 'This is a test note from repository.'
+    assert added_note.content == 'This is a test note from notes_repository.'
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_get_all_notes(repository):
+async def test_get_all_notes(notes_repository):
     note1 = Note(title='Note 1', content='Content 1', created_at=now_ist())
     note2 = Note(title='Note 2', content='Content 2', created_at=now_ist())
-    await repository.add_note(note1)
-    await repository.add_note(note2)
+    await notes_repository.add_note(note1)
+    await notes_repository.add_note(note2)
 
-    notes = await repository.get_all()
+    notes = await notes_repository.get_all()
 
     assert len(notes) >= 2  # More robust check
     titles = [note.title for note in notes]
@@ -48,13 +48,13 @@ async def test_get_all_notes(repository):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_get_note(repository):
+async def test_get_note(notes_repository):
     # Arrange
     note = Note(title='Test Get Note', content='This is a test for get_note.', created_at=now_ist())
-    added_note = await repository.add_note(note)
+    added_note = await notes_repository.add_note(note)
 
     # Act
-    retrieved_note = await repository.get_note(added_note.id)
+    retrieved_note = await notes_repository.get_note(added_note.id)
 
     # Assert
     assert retrieved_note is not None
@@ -65,13 +65,13 @@ async def test_get_note(repository):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_get_note_not_found(repository):
+async def test_get_note_not_found(notes_repository):
     # Arrange
     non_existent_id = 9999  # Assuming this ID doesn't exist
 
     # Act & Assert
     with pytest.raises(NoteNotFoundError) as excinfo:
-        await repository.get_note(non_existent_id)
+        await notes_repository.get_note(non_existent_id)
 
     assert str(non_existent_id) in str(excinfo.value)
     assert 'Note not found' in str(excinfo.value)
@@ -79,28 +79,28 @@ async def test_get_note_not_found(repository):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_delete_note(repository):
+async def test_delete_note(notes_repository):
     # Arrange
     note = Note(title='Test Delete Note', content='This is a test for delete_note.', created_at=now_ist())
-    added_note = await repository.add_note(note)
+    added_note = await notes_repository.add_note(note)
 
     # Act
-    await repository.delete_note(added_note.id)
+    await notes_repository.delete_note(added_note.id)
 
     # Assert
     with pytest.raises(NoteNotFoundError):
-        await repository.get_note(added_note.id)
+        await notes_repository.get_note(added_note.id)
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_delete_note_not_found(repository):
+async def test_delete_note_not_found(notes_repository):
     # Arrange
     non_existent_id = 9999  # Assuming this ID doesn't exist
 
     # Act & Assert
     with pytest.raises(NoteNotFoundError) as excinfo:
-        await repository.delete_note(non_existent_id)
+        await notes_repository.delete_note(non_existent_id)
 
     assert str(non_existent_id) in str(excinfo.value)
     assert 'Note not found' in str(excinfo.value)

@@ -63,7 +63,7 @@ async def session(db_engine, setup_db) -> AsyncSession:
 
 
 @pytest.fixture
-async def repository(session):
+async def notes_repository(session):
     """
     Create a NotesRepository instance for testing.
     """
