@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
+from src.tasknote.api.dependencies import get_note_service
 from src.tasknote.api.router import router
 from src.tasknote.logger import log
 from src.tasknote.persistence.db import get_db_session
@@ -99,6 +100,18 @@ async def override_db_session(app: FastAPI, session: AsyncSession):
         yield session
 
     app.dependency_overrides[get_db_session] = override_get_db_session
+    try:
+        yield
+    finally:
+        app.dependency_overrides.clear()
+
+
+@asynccontextmanager
+async def override_note_service(app: FastAPI, mock_service):
+    """
+    Context manager to override the note service for tests.
+    """
+    app.dependency_overrides[get_note_service] = lambda: mock_service
     try:
         yield
     finally:
