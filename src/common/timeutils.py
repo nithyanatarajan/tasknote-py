@@ -10,3 +10,11 @@ def now_ist():
 
 def now_utc():
     return datetime.now(UTC)
+
+
+def to_isoz(dt: datetime) -> str:
+    """
+    Convert *aware* datetime → ISO8601 string that ends in “Z”
+    (i.e. +00:00 replaced with Z).
+    """
+    return dt.astimezone(UTC).isoformat(timespec='microseconds').replace('+00:00', 'Z')
