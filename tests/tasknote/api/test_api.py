@@ -1,4 +1,4 @@
-# tests/tasknote/api/test_notes_api.py
+# tests/tasknote/api/test_api.py
 from datetime import timedelta
 
 import pytest
