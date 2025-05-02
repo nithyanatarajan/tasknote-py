@@ -3,8 +3,8 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from src.notes.persistence.entities import Base
-from src.notes.settings import settings
+from src.tasknote.persistence.entities import Base
+from src.tasknote.settings import settings
 
 # this is the Alembic Config object
 config = context.config

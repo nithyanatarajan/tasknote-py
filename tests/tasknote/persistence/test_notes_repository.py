@@ -1,11 +1,11 @@
-# tests/notes/persistence/test_repository.py
+# tests/tasknote/persistence/test_repository.py
 import asyncio
 
 import pytest
 
 from src.common.timeutils import now_ist
-from src.notes.domain.exceptions import NoteNotFoundError
-from src.notes.domain.model import Note
+from src.tasknote.domain.exceptions import NoteNotFoundError
+from src.tasknote.domain.models import Note
 
 
 @pytest.fixture(scope='session')

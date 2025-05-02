@@ -1,8 +1,8 @@
-# src/notes/api/router.py
+# src/tasknote/api/router.py
 from fastapi import APIRouter, Depends, HTTPException
 
 from ..api.schemas import NoteCreate, NoteRead
-from ..application.service import NoteService
+from ..application.note_service import NoteService
 from ..domain.exceptions import NoteNotFoundError
 from .dependencies import get_note_service
 
@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get('/')
 async def root():
-    return {'message': 'Welcome to the Notes API'}
+    return {'message': 'Welcome to the TaskNote'}
 
 
 @router.get('/health')

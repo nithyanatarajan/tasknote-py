@@ -1,4 +1,4 @@
-# src/notes/domain/model.py
+# src/tasknote/domain/model.py
 from datetime import datetime
 
 

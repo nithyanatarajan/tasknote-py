@@ -1,12 +1,12 @@
-# tests/notes/api/test_notes_api.py
+# tests/tasknote/api/test_notes_api.py
 
 import pytest
 
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient, codes
 
-from src.notes.api.router import router
-from src.notes.persistence.db import get_db_session
+from src.tasknote.api.router import router
+from src.tasknote.persistence.db import get_db_session
 
 app = FastAPI()
 app.include_router(router)

@@ -5,10 +5,10 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient, codes
 
-from src.notes.api.dependencies import get_note_service
-from src.notes.api.router import router
-from src.notes.api.schemas import NoteCreate
-from src.notes.domain.exceptions import NoteNotFoundError
+from src.tasknote.api.dependencies import get_note_service
+from src.tasknote.api.router import router
+from src.tasknote.api.schemas import NoteCreate
+from src.tasknote.domain.exceptions import NoteNotFoundError
 
 app = FastAPI()
 app.include_router(router)
@@ -19,7 +19,7 @@ async def test_root():
     async with AsyncClient(transport=(ASGITransport(app=app)), base_url='http://test') as ac:
         response = await ac.get('/')
     assert response.status_code == codes.OK
-    assert response.json() == {'message': 'Welcome to the Notes API'}
+    assert response.json() == {'message': 'Welcome to the TaskNote'}
 
 
 @pytest.mark.asyncio

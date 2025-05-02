@@ -1,6 +1,12 @@
 version: '3'
 
 tasks:
+
+  default:
+    desc: List all tasks
+    cmds:
+      - task --list
+
   install:
     desc: Install dependencies from requirements.lock using uv
     cmd: uv pip install -r requirements.lock
@@ -37,32 +43,41 @@ tasks:
     desc: Run main FastAPI app
     cmd: uv run uvicorn src.main:app --port 8080
 
-  run-notes-dev:
-    desc: Run notes FastAPI app in dev mode
-    cmd: uv run uvicorn src.notes.main:app --reload --port 8081
+  ## tasknote service
 
-  run-notes:
-    desc: Run notes FastAPI app
-    cmd: uv run uvicorn src.notes.main:app --port 8081
+  run-dev:tasknote:
+    desc: Run tasknote service app in dev mode
+    cmd: uv run uvicorn src.tasknote.main:app --reload --port 8081
 
-  run-all:
-    desc: Run both main and notes apps concurrently
-    deps: [ run, run-notes ]
+  run:tasknote:
+    desc: Run tasknote service app
+    cmd: uv run uvicorn src.tasknote.main:app --port 8081
 
-  migrate-notes:
-    desc: "Up-Migrate Notes service"
+
+  migrate:tasknote:
+    desc: Up-Migrate tasknote service
     cmds:
-      - alembic -c src/notes/alembic.ini upgrade head
+      - alembic -c src/tasknote/alembic.ini upgrade head
 
-  down-migrate-notes:
-    desc: "Down-Migrate Notes service"
+  down-migrate:tasknote:
+    desc: Down-Migrate tasknote service
     cmds:
-      - alembic -c src/notes/alembic.ini downgrade -1
+      - alembic -c src/tasknote/alembic.ini downgrade -1
 
 
-  revision-notes:
-    desc: "Create a new Alembic revision for Notes"
+  revision:tasknote:
+    desc: Create a new Alembic revision for tasknote service
     cmds:
-      - alembic -c src/notes/alembic.ini revision --autogenerate -m "{{.MSG}}"
+      - alembic -c src/tasknote/alembic.ini revision --autogenerate -m "{{.MSG}}"
     requires:
       vars: [ "MSG" ]
+
+  test-unit:tasknote:
+    desc: Run unit tests with pytest
+    cmd: uv run pytest tests/tasknote -m "not integration"
+
+  test-integration:tasknote:
+    desc: Run integration tests with pytest
+    cmd: uv run pytest tests/tasknote -m "integration"
+
+    ## tasknote service end

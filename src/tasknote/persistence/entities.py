@@ -1,4 +1,4 @@
-# src/notes/persistence/entities.py
+# src/tasknote/persistence/entities.py
 
 from datetime import datetime
 

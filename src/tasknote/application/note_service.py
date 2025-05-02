@@ -1,9 +1,9 @@
 from src.common.timeutils import now_ist
 
 from ..api.schemas import NoteCreate
-from ..domain.model import Note
+from ..domain.models import Note
 from ..logger import log
-from ..persistence.repository import NotesRepository
+from ..persistence.note_repository import NotesRepository
 
 
 class NoteService:

@@ -1,6 +1,6 @@
-# src/notes/persistence/mappers.py
-from src.notes.domain.model import Note
-from src.notes.persistence.entities import NoteEntity
+# src/tasknote/persistence/mappers.py
+from src.tasknote.domain.models import Note
+from src.tasknote.persistence.entities import NoteEntity
 
 
 def to_domain(entity: NoteEntity) -> Note:

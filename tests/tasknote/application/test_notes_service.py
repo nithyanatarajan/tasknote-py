@@ -1,13 +1,13 @@
-# tests/notes/application/test_service.py
+# tests/tasknote/application/test_service.py
 from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
 
-from src.notes.api.schemas import NoteCreate
-from src.notes.application.service import NoteService
-from src.notes.domain.exceptions import NoteNotFoundError
-from src.notes.domain.model import Note
+from src.tasknote.api.schemas import NoteCreate
+from src.tasknote.application.note_service import NoteService
+from src.tasknote.domain.exceptions import NoteNotFoundError
+from src.tasknote.domain.models import Note
 
 
 @pytest.mark.asyncio

@@ -1,4 +1,4 @@
-# tests/notes/conftest.py
+# tests/tasknote/conftest.py
 from asyncio import sleep
 
 import pytest
@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
-from src.notes.logger import log
-from src.notes.persistence.entities import Base
-from src.notes.persistence.repository import NotesRepository
+from src.tasknote.logger import log
+from src.tasknote.persistence.entities import Base
+from src.tasknote.persistence.note_repository import NotesRepository
 
 
 @pytest.fixture(scope='session')
