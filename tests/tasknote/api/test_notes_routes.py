@@ -3,35 +3,29 @@ from unittest.mock import AsyncMock
 import pytest
 
 from fastapi import FastAPI
-from httpx import ASGITransport, AsyncClient, codes
+from httpx import AsyncClient, codes
 
 from src.tasknote.api.dependencies import get_note_service
-from src.tasknote.api.router import router
 from src.tasknote.api.schemas import NoteCreate
 from src.tasknote.domain.exceptions import NoteNotFoundError
 
-app = FastAPI()
-app.include_router(router)
-
 
 @pytest.mark.asyncio
-async def test_root():
-    async with AsyncClient(transport=(ASGITransport(app=app)), base_url='http://test') as ac:
-        response = await ac.get('/')
+async def test_root(client: AsyncClient):
+    response = await client.get('/')
     assert response.status_code == codes.OK
     assert response.json() == {'message': 'Welcome to the TaskNote'}
 
 
 @pytest.mark.asyncio
-async def test_health():
-    async with AsyncClient(transport=(ASGITransport(app=app)), base_url='http://test') as ac:
-        response = await ac.get('/health')
+async def test_health(client: AsyncClient):
+    response = await client.get('/health')
     assert response.status_code == codes.OK
     assert response.json() == {'status': 'OK'}
 
 
 @pytest.mark.asyncio
-async def test_create_note():
+async def test_create_note(app: FastAPI, client: AsyncClient):
     mock_note = {
         'id': 1,
         'title': 'Test Note',
@@ -44,8 +38,7 @@ async def test_create_note():
 
     app.dependency_overrides[get_note_service] = lambda: mock_service
 
-    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
-        response = await ac.post('/notes', json={'title': 'Test Note', 'content': 'This is a test note from api.'})
+    response = await client.post('/notes', json={'title': 'Test Note', 'content': 'This is a test note from api.'})
 
     assert response.status_code == codes.OK
     data = response.json()
@@ -58,7 +51,7 @@ async def test_create_note():
 
 
 @pytest.mark.asyncio
-async def test_get_note():
+async def test_get_note(app: FastAPI, client: AsyncClient):
     mock_note = {
         'id': 1,
         'title': 'Test Note',
@@ -71,8 +64,7 @@ async def test_get_note():
 
     app.dependency_overrides[get_note_service] = lambda: mock_service
 
-    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
-        response = await ac.get('/notes/1')
+    response = await client.get('/notes/1')
 
     assert response.status_code == codes.OK
     data = response.json()
@@ -83,15 +75,14 @@ async def test_get_note():
 
 
 @pytest.mark.asyncio
-async def test_get_note_not_found():
+async def test_get_note_not_found(app: FastAPI, client: AsyncClient):
     note_id = 999
     mock_service = AsyncMock()
     mock_service.get_note.side_effect = NoteNotFoundError(note_id)
 
     app.dependency_overrides[get_note_service] = lambda: mock_service
 
-    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
-        response = await ac.get(f'/notes/{note_id}')
+    response = await client.get(f'/notes/{note_id}')
 
     assert response.status_code == codes.NOT_FOUND
     data = response.json()
@@ -102,7 +93,7 @@ async def test_get_note_not_found():
 
 
 @pytest.mark.asyncio
-async def test_get_notes():
+async def test_get_notes(app: FastAPI, client: AsyncClient):
     mock_notes = [
         {
             'id': 1,
@@ -123,8 +114,7 @@ async def test_get_notes():
 
     app.dependency_overrides[get_note_service] = lambda: mock_service
 
-    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
-        response = await ac.get('/notes')
+    response = await client.get('/notes')
 
     assert response.status_code == codes.OK
     data = response.json()
@@ -135,14 +125,13 @@ async def test_get_notes():
 
 
 @pytest.mark.asyncio
-async def test_delete_note():
+async def test_delete_note(app: FastAPI, client: AsyncClient):
     note_id = 1
     mock_service = AsyncMock()
 
     app.dependency_overrides[get_note_service] = lambda: mock_service
 
-    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
-        response = await ac.delete(f'/notes/{note_id}')
+    response = await client.delete(f'/notes/{note_id}')
 
     assert response.status_code == codes.NO_CONTENT
     assert response.content == b''  # No content in response body
@@ -152,15 +141,14 @@ async def test_delete_note():
 
 
 @pytest.mark.asyncio
-async def test_delete_note_not_found():
+async def test_delete_note_not_found(app: FastAPI, client: AsyncClient):
     note_id = 999
     mock_service = AsyncMock()
     mock_service.delete_note.side_effect = NoteNotFoundError(note_id)
 
     app.dependency_overrides[get_note_service] = lambda: mock_service
 
-    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
-        response = await ac.delete(f'/notes/{note_id}')
+    response = await client.delete(f'/notes/{note_id}')
 
     assert response.status_code == codes.NOT_FOUND
     data = response.json()
