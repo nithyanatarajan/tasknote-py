@@ -1,0 +1,18 @@
+meta {
+  name: create a task
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://127.0.0.1:8081/tasknote/tasks
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "Sample Task"
+  }
+  
+}
