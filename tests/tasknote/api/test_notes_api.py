@@ -37,6 +37,29 @@ async def test_create_note_e2e(session):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_create_note_without_content_e2e(session):
+    # Override the app's DB session to use test session
+    async def override_get_db_session():
+        yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        response = await ac.post('/notes', json={'title': 'Note Without Content'})
+
+    assert response.status_code == codes.OK
+    body = response.json()
+    assert body['title'] == 'Note Without Content'
+    assert body['content'] is None
+    assert body['id'] is not None
+    assert 'created_at' in body
+
+    # Clean up to avoid override leakage
+    app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_get_note_e2e_success(session):
     # Override the app's DB session to use test session
     async def override_get_db_session():

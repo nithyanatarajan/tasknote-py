@@ -31,6 +31,26 @@ async def test_create_note_calls_add_note():
 
 
 @pytest.mark.asyncio
+async def test_create_note_without_content():
+    # Arrange
+    mock_repository = AsyncMock()
+    note_service = NoteService(repository=mock_repository)
+    note_create = NoteCreate(title='Test Note Without Content')
+
+    # Act
+    await note_service.create_note(note_create)
+
+    # Assert
+    mock_repository.add_note.assert_called_once()
+    args, _ = mock_repository.add_note.call_args
+    assert len(args) == 1
+    note = args[0]
+    assert note.title == 'Test Note Without Content'
+    assert note.content is None
+    assert isinstance(note.created_at, datetime)
+
+
+@pytest.mark.asyncio
 async def test_get_note_returns_note():
     # Arrange
     mock_repository = AsyncMock()

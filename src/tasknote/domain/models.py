@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Note:
-    def __init__(self, title: str, content: str, created_at: datetime, id: int | None = None):
+    def __init__(self, title: str, content: str | None, created_at: datetime, id: int | None = None):
         self.id = id
         self.title = title
         self.content = content
