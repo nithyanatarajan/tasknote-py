@@ -35,14 +35,6 @@ tasks:
     desc: Run integration tests with pytest
     cmd: uv run pytest tests -m "integration"
 
-  run-dev:
-    desc: Run main FastAPI app in dev mode
-    cmd: uv run uvicorn src.main:app --reload --port 8080
-
-  run:
-    desc: Run main FastAPI app
-    cmd: uv run uvicorn src.main:app --port 8080
-
   ## tasknote service
 
   run-dev:tasknote:
