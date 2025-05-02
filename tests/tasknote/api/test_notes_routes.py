@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest.mock import AsyncMock
 
 import pytest
@@ -5,9 +6,11 @@ import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient, codes
 
-from src.tasknote.api.schemas import NoteCreate
+from src.common.timeutils import now_ist
+from src.tasknote.api.schemas import NoteCreate, TaskCreate
 from src.tasknote.domain.exceptions import NoteNotFoundError
-from tests.tasknote.conftest import override_note_service
+from src.tasknote.domain.models import TaskStatus
+from tests.tasknote.conftest import override_note_service, override_tasks_service
 
 
 @pytest.mark.asyncio
@@ -138,3 +141,70 @@ async def test_delete_note_not_found(app: FastAPI, client: AsyncClient):
         data = response.json()
         assert data == {'detail': f'Note not found: {note_id}'}
         mock_service.delete_note.assert_called_once_with(note_id)
+
+
+@pytest.mark.asyncio
+async def test_create_task(app: FastAPI, client: AsyncClient):
+    created_at = now_ist()
+    mock_task = {
+        'id': 1,
+        'title': 'Test Task',
+        'description': 'This is a test task.',
+        'priority': 1,
+        'created_at': created_at.isoformat(),
+        'due_date': (created_at + timedelta(days=7)).isoformat(),
+        'completed_at': None,
+        'status': TaskStatus.NEW,
+    }
+
+    mock_service = AsyncMock()
+    mock_service.create_task.return_value = mock_task
+
+    async with override_tasks_service(app, mock_service):
+        response = await client.post(
+            '/tasks',
+            json={
+                'title': 'Test Task',
+                'description': 'This is a test task.',
+                'priority': 1,
+                'due_date': (created_at + timedelta(days=7)).isoformat(),
+            },
+        )
+
+        assert response.status_code == codes.OK
+        data = response.json()
+        assert data == mock_task
+        mock_service.create_task.assert_called_once_with(
+            TaskCreate(
+                title='Test Task',
+                description='This is a test task.',
+                priority=1,
+                due_date=(created_at + timedelta(days=7)).isoformat(),
+            )
+        )
+
+
+@pytest.mark.asyncio
+async def test_create_task_minimal(app: FastAPI, client: AsyncClient):
+    created_at = now_ist()
+    mock_task = {
+        'id': 1,
+        'title': 'Minimal Task',
+        'description': None,
+        'priority': None,
+        'created_at': created_at.isoformat(),
+        'due_date': None,
+        'completed_at': None,
+        'status': TaskStatus.NEW,
+    }
+
+    mock_service = AsyncMock()
+    mock_service.create_task.return_value = mock_task
+
+    async with override_tasks_service(app, mock_service):
+        response = await client.post('/tasks', json={'title': 'Minimal Task'})
+
+        assert response.status_code == codes.OK
+        data = response.json()
+        assert data == mock_task
+        mock_service.create_task.assert_called_once_with(TaskCreate(title='Minimal Task'))

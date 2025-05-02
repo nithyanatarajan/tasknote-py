@@ -11,12 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
-from src.tasknote.api.dependencies import get_note_service
+from src.tasknote.api.dependencies import get_note_service, get_tasks_service
 from src.tasknote.api.router import router
 from src.tasknote.logger import log
 from src.tasknote.persistence.db import get_db_session
 from src.tasknote.persistence.entities import Base
 from src.tasknote.persistence.note_repository import NotesRepository
+from src.tasknote.persistence.tasks_repository import TasksRepository
 
 
 @pytest.fixture(scope='session')
@@ -72,6 +73,14 @@ async def notes_repository(session):
 
 
 @pytest.fixture
+async def tasks_repository(session):
+    """
+    Create a TasksRepository instance for testing.
+    """
+    return TasksRepository(session)
+
+
+@pytest.fixture
 def app() -> FastAPI:
     """
     Create a FastAPI app for testing.
@@ -112,6 +121,18 @@ async def override_note_service(app: FastAPI, mock_service):
     Context manager to override the note service for tests.
     """
     app.dependency_overrides[get_note_service] = lambda: mock_service
+    try:
+        yield
+    finally:
+        app.dependency_overrides.clear()
+
+
+@asynccontextmanager
+async def override_tasks_service(app: FastAPI, mock_service):
+    """
+    Context manager to override the tasks service for tests.
+    """
+    app.dependency_overrides[get_tasks_service] = lambda: mock_service
     try:
         yield
     finally:

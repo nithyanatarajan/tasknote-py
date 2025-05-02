@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from src.common.timeutils import now_ist
 from src.tasknote.api.schemas import NoteCreate
 from src.tasknote.application.note_service import NoteService
 from src.tasknote.domain.exceptions import NoteNotFoundError
@@ -54,7 +55,7 @@ async def test_create_note_without_content():
 async def test_get_note_returns_note():
     # Arrange
     mock_repository = AsyncMock()
-    mock_note = Note(id=1, title='Test Note', content='This is a test note.', created_at=datetime.now())
+    mock_note = Note(id=1, title='Test Note', content='This is a test note.', created_at=now_ist())
     mock_repository.get_note.return_value = mock_note
     note_service = NoteService(repository=mock_repository)
 
@@ -86,8 +87,8 @@ async def test_get_all_notes():
     # Arrange
     mock_repository = AsyncMock()
     mock_notes = [
-        Note(id=1, title='Test Note 1', content='This is test note 1.', created_at=datetime.now()),
-        Note(id=2, title='Test Note 2', content='This is test note 2.', created_at=datetime.now()),
+        Note(id=1, title='Test Note 1', content='This is test note 1.', created_at=now_ist()),
+        Note(id=2, title='Test Note 2', content='This is test note 2.', created_at=now_ist()),
     ]
     mock_repository.get_all.return_value = mock_notes
     note_service = NoteService(repository=mock_repository)

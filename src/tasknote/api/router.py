@@ -1,10 +1,11 @@
 # src/tasknote/api/router.py
 from fastapi import APIRouter, Depends, HTTPException
 
-from ..api.schemas import NoteCreate, NoteRead
+from ..api.schemas import NoteCreate, NoteRead, TaskCreate, TaskRead
 from ..application.note_service import NoteService
+from ..application.tasks_service import TasksService
 from ..domain.exceptions import NoteNotFoundError
-from .dependencies import get_note_service
+from .dependencies import get_note_service, get_tasks_service
 
 router = APIRouter()
 
@@ -43,3 +44,8 @@ async def delete_note(note_id: int, service: NoteService = Depends(get_note_serv
         await service.delete_note(note_id)
     except NoteNotFoundError as e:
         raise HTTPException(status_code=404, detail=e.message) from e
+
+
+@router.post('/tasks', response_model=TaskRead)
+async def create_task(task_create: TaskCreate, service: TasksService = Depends(get_tasks_service)):
+    return await service.create_task(task_create)

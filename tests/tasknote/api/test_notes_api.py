@@ -1,4 +1,5 @@
 # tests/tasknote/api/test_notes_api.py
+from datetime import timedelta
 
 import pytest
 
@@ -6,6 +7,7 @@ from fastapi import FastAPI
 from httpx import AsyncClient, codes
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.common.timeutils import now_ist, to_isoz
 from tests.tasknote.conftest import override_db_session
 
 
@@ -153,3 +155,50 @@ async def test_delete_note_e2e_not_found(app: FastAPI, session: AsyncSession, cl
         error = response.json()
         assert 'Note not found' in error['detail']
         assert str(non_existent_id) in error['detail']
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_task_e2e(app: FastAPI, session: AsyncSession, client: AsyncClient):
+    async with override_db_session(app, session):
+        # Create a task with all fields
+        due_date = now_ist() + timedelta(days=7)
+        response = await client.post(
+            '/tasks',
+            json={
+                'title': 'E2E Task',
+                'description': 'This is a test task created from the full stack.',
+                'priority': 1,
+                'due_date': due_date.isoformat(),
+            },
+        )
+
+        assert response.status_code == codes.OK
+        body = response.json()
+        assert body['title'] == 'E2E Task'
+        assert body['description'] == 'This is a test task created from the full stack.'
+        assert body['priority'] == 1
+        assert body['due_date'] == to_isoz(due_date)
+        assert body['id'] is not None
+        assert body['status'] == 'NEW'
+        assert body['completed_at'] is None
+        assert 'created_at' in body
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_task_minimal_e2e(app: FastAPI, session: AsyncSession, client: AsyncClient):
+    async with override_db_session(app, session):
+        # Create a task with only required fields
+        response = await client.post('/tasks', json={'title': 'Minimal Task'})
+
+        assert response.status_code == codes.OK
+        body = response.json()
+        assert body['title'] == 'Minimal Task'
+        assert body['description'] is None
+        assert body['priority'] is None
+        assert body['due_date'] is None
+        assert body['id'] is not None
+        assert body['status'] == 'NEW'
+        assert body['completed_at'] is None
+        assert 'created_at' in body
