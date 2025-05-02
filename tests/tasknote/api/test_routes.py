@@ -8,7 +8,7 @@ from httpx import AsyncClient, codes
 
 from src.common.timeutils import now_ist
 from src.tasknote.api.schemas import NoteCreate, TaskCreate
-from src.tasknote.domain.exceptions import NoteNotFoundError
+from src.tasknote.domain.exceptions import NoteNotFoundError, TaskNotFoundError
 from src.tasknote.domain.models import TaskStatus
 from tests.tasknote.conftest import override_note_service, override_tasks_service
 
@@ -208,3 +208,108 @@ async def test_create_task_minimal(app: FastAPI, client: AsyncClient):
         data = response.json()
         assert data == mock_task
         mock_service.create_task.assert_called_once_with(TaskCreate(title='Minimal Task'))
+
+
+@pytest.mark.asyncio
+async def test_get_tasks(app: FastAPI, client: AsyncClient):
+    mock_tasks = [
+        {
+            'id': 1,
+            'title': 'Test Task 1',
+            'description': 'This is test task 1.',
+            'priority': 1,
+            'created_at': '2023-10-01T00:00:00',
+            'due_date': '2023-10-08T00:00:00',
+            'completed_at': None,
+            'status': TaskStatus.NEW,
+        },
+        {
+            'id': 2,
+            'title': 'Test Task 2',
+            'description': 'This is test task 2.',
+            'priority': 2,
+            'created_at': '2023-10-02T00:00:00',
+            'due_date': '2023-10-09T00:00:00',
+            'completed_at': None,
+            'status': TaskStatus.PENDING,
+        },
+    ]
+
+    mock_service = AsyncMock()
+    mock_service.get_all_tasks.return_value = mock_tasks
+
+    async with override_tasks_service(app, mock_service):
+        response = await client.get('/tasks')
+
+        assert response.status_code == codes.OK
+        data = response.json()
+        assert data == mock_tasks
+        mock_service.get_all_tasks.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_get_task(app: FastAPI, client: AsyncClient):
+    mock_task = {
+        'id': 1,
+        'title': 'Test Task',
+        'description': 'This is a test task from api.',
+        'priority': 1,
+        'created_at': '2023-10-01T00:00:00',
+        'due_date': '2023-10-08T00:00:00',
+        'completed_at': None,
+        'status': TaskStatus.NEW,
+    }
+
+    mock_service = AsyncMock()
+    mock_service.get_task.return_value = mock_task
+
+    async with override_tasks_service(app, mock_service):
+        response = await client.get('/tasks/1')
+
+        assert response.status_code == codes.OK
+        data = response.json()
+        assert data == mock_task
+        mock_service.get_task.assert_called_once_with(1)
+
+
+@pytest.mark.asyncio
+async def test_get_task_not_found(app: FastAPI, client: AsyncClient):
+    task_id = 999
+    mock_service = AsyncMock()
+    mock_service.get_task.side_effect = TaskNotFoundError(task_id)
+
+    async with override_tasks_service(app, mock_service):
+        response = await client.get(f'/tasks/{task_id}')
+
+        assert response.status_code == codes.NOT_FOUND
+        data = response.json()
+        assert data == {'detail': f'Task not found: {task_id}'}
+        mock_service.get_task.assert_called_once_with(task_id)
+
+
+@pytest.mark.asyncio
+async def test_delete_task(app: FastAPI, client: AsyncClient):
+    task_id = 1
+    mock_service = AsyncMock()
+
+    async with override_tasks_service(app, mock_service):
+        response = await client.delete(f'/tasks/{task_id}')
+
+        assert response.status_code == codes.NO_CONTENT
+        assert response.content == b''  # No content in response body
+        mock_service.delete_task.assert_called_once_with(task_id)
+
+
+@pytest.mark.asyncio
+async def test_delete_task_not_found(app: FastAPI, client: AsyncClient):
+    task_id = 999
+    mock_service = AsyncMock()
+    mock_service.delete_task.side_effect = TaskNotFoundError(task_id)
+
+    async with override_tasks_service(app, mock_service):
+        response = await client.delete(f'/tasks/{task_id}')
+
+        assert response.status_code == codes.NOT_FOUND
+        data = response.json()
+        assert data == {'detail': f'Task not found: {task_id}'}
+        mock_service.delete_task.assert_called_once_with(task_id)
