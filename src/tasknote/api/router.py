@@ -10,7 +10,7 @@ from .dependencies import get_note_service, get_tasks_service
 router = APIRouter()
 
 
-@router.get('/')
+@router.get('/welcome')
 async def root():
     return {'message': 'Welcome to the TaskNote'}
 
