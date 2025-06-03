@@ -5,16 +5,18 @@
 name = "tasknote-py"
 version = "0.1.0"
 description = "Add your description here"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi",
     "pydantic-settings",
     "structlog",
     "alembic",
     "asyncpg",
-    "psycopg2",
+    "psycopg2-binary",
     "python-dotenv",
     "greenlet",
+    "uvicorn", # ASGI server
+    "pyyaml",
 ]
 
 [project.optional-dependencies]
@@ -22,7 +24,6 @@ dev = [
     "pytest",
     "pytest-asyncio", # async test support
     "ruff", # lint + format
-    "uvicorn", # ASGI server
     "httpx", # async HTTP client
     "fastapi[standard]", # FastAPI with standard dependencies
     "pytest-cov", # coverage reporting
@@ -34,7 +35,7 @@ dev = [
 # ----------------------------------------
 [tool.ruff]
 line-length = 120
-target-version = "py313"
+target-version = "py312"
 fix = true  # Auto-fix issues
 
 [tool.ruff.format]
