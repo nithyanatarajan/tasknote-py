@@ -813,7 +813,9 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
+    { name = "pyyaml" },
     { name = "structlog" },
+    { name = "uvicorn" },
 ]
 
 [package.optional-dependencies]
@@ -825,7 +827,6 @@ dev = [
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "testcontainers" },
-    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -842,10 +843,11 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'dev'" },
     { name = "pytest-cov", marker = "extra == 'dev'" },
     { name = "python-dotenv" },
+    { name = "pyyaml" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "structlog" },
     { name = "testcontainers", marker = "extra == 'dev'" },
-    { name = "uvicorn", marker = "extra == 'dev'" },
+    { name = "uvicorn" },
 ]
 provides-extras = ["dev"]
 

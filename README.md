@@ -81,3 +81,17 @@ task test
 ```shell
 task --list
 ```
+
+## Docker
+
+### Build the Docker Image
+
+```bash
+docker build -t tasknote-py:latest .
+```
+
+### Run the Docker Container
+
+```bash
+docker run -d -p 8081:8081 --name tasknote-py tasknote-py:latest
+```

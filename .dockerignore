@@ -1,0 +1,8 @@
+__pycache__/
+*.pyo
+.venv/
+.cache/
+.git/
+.github
+.cursor
+.junie
