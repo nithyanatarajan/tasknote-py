@@ -15,7 +15,7 @@ from tests.tasknote.conftest import override_note_service, override_tasks_servic
 
 @pytest.mark.asyncio
 async def test_root(client: AsyncClient):
-    response = await client.get('/')
+    response = await client.get('/welcome')
     assert response.status_code == codes.OK
     assert response.json() == {'message': 'Welcome to the TaskNote'}
 
